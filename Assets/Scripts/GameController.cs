@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     public int numOfColumns;
 
     // 길 찾기 결과
-    private ArrayList pathList;
+    public ArrayList pathList;
 
     // 장애물
     private GameObject[] obstacles;
@@ -23,6 +23,10 @@ public class GameController : MonoBehaviour
 
     // Node 객체들
     private Node[,] nodes;
+
+
+    int i = 1;
+    public GameObject moveObj;
 
     // GameController 싱글톤 프로퍼티
     private static GameController instance = null;
@@ -70,6 +74,7 @@ public class GameController : MonoBehaviour
         pathList = AStar.FindPath(startNode, endNode);
 
         Debug.Log(pathList);
+
     }
 
     private void InitNodes()
@@ -147,10 +152,11 @@ public class GameController : MonoBehaviour
         {
             resultList.Add(nodes[nodeRowIndex, nodeColumnIndex]);
         }
-
+        
         return resultList;
     }
 
+    
     // 특정 Row, Column index의 Node가 유효한지 확인하는 함수
     private bool IsAvailableNode(int rowIndex, int columnIndex)
     {
@@ -235,9 +241,31 @@ public class GameController : MonoBehaviour
                 {
                     Node nextNode = (Node)pathList[index];
                     Debug.DrawLine(node.position, nextNode.position, Color.red);
+                   
                     index++;
                 }
             }
         }
+        
+
     }
+    private void Update()
+    {
+        if (i < pathList.Count)
+        {
+            StartCoroutine(move());
+            i++;
+        }
+        
+    }
+    IEnumerator move()
+    {
+        Node node0 = (Node)pathList[i-1];
+        Node node = (Node)pathList[i];
+        
+            moveObj.transform.position = Vector3.Lerp(node0.position, node.position,Time.deltaTime);
+      
+        yield return new WaitForFixedUpdate();
+    }
+
 }
